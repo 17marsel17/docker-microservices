@@ -1,0 +1,26 @@
+services:
+  storage:
+    image: redis:latest
+  counter:
+    build: ./counter
+    volumes:
+      - ./counter/logs:/app/logs
+    ports:
+      - 80:3000
+    environment:
+      - PORT=3000
+      - STORAGE_URL=redis://storage
+    depends_on:
+      - storage
+  library:
+    build: ./main
+    volumes:
+      - ./main/load:/app/load
+      - ./main/logs:/app/logs
+    ports:
+      - 81:3000
+    environment:
+      - PORT=3000
+      - STORAGE_URL=redis://storage
+    depends_on:
+      - storage
