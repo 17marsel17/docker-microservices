@@ -1,26 +1,31 @@
 services:
-  storage:
-    image: redis:latest
-  counter:
-    build: ./counter
-    volumes:
-      - ./counter/logs:/app/logs
-    ports:
-      - 80:3000
-    environment:
-      - PORT=3000
-      - STORAGE_URL=redis://storage
-    depends_on:
-      - storage
-  library:
-    build: ./main
-    volumes:
-      - ./main/load:/app/load
-      - ./main/logs:/app/logs
-    ports:
-      - 81:3000
-    environment:
-      - PORT=3000
-      - STORAGE_URL=redis://storage
-    depends_on:
-      - storage
+    storage:
+        image: redis:latest
+        networks:
+            - app-network
+    counter:
+        build: ./counter
+        volumes:
+            - ./counter/logs:/app/logs
+        ports:
+            - 80:3000
+        environment:
+            - PORT=3000
+            - STORAGE_URL=redis://storage
+        networks:
+            - app-network
+    library:
+        build: ./main
+        volumes:
+            - ./main/load:/app/load
+            - ./main/logs:/app/logs
+        ports:
+            - 81:3000
+        environment:
+            - PORT=3000
+            - COUNTER_URL=http://counter:3000
+        networks:
+            - app-network
+networks:
+    app-network:
+        driver: bridge

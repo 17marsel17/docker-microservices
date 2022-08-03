@@ -1,7 +1,7 @@
 import express from "express";
 import { PORT } from "./config.js";
 import { router as counterRouter } from "./routes/counterRouter.js";
-import { logger} from './middleware/logger.js'
+import { logger } from "./middleware/logger.js";
 
 const app = express();
 

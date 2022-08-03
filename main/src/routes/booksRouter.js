@@ -2,18 +2,10 @@ import express from "express";
 import { store, Book } from "../book.js";
 import { storage, fileFilter } from "../middleware/file.js";
 import multer from "multer";
-import redis from "redis";
-import { STORAGE_URL } from "../config.js";
+import { COUNTER_URL } from "../config.js";
+import axios from 'axios';
 
 export const router = express.Router();
-
-const client = redis.createClient({ url: STORAGE_URL });
-
-(async () => {
-  await client.connect();
-})();
-
-const storeRedis = {};
 
 router.get("/:id/download", (req, res) => {
   const { books } = store;
@@ -55,14 +47,18 @@ router.get("/:id", async (req, res) => {
     });
   }
 
-  const count = await client.incr(id);
+  const url = `${COUNTER_URL}/counter/${id}/incr`;
+  console.log('url', url);
+  axios.post(url).then((counterRes) => {
+    console.log('counterRes', counterRes.data);
 
-
-  res.render("books/view", {
-    title: "Просмотр книги",
-    book: book,
-    counter: count
+    res.render("books/view", {
+      title: "Просмотр книги",
+      book: book,
+      counter: counterRes.data.count,
+    });
   });
+
 });
 
 router.post(

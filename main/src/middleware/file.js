@@ -1,28 +1,26 @@
-
-import multer from 'multer'
+import multer from "multer";
 
 export const storage = multer.diskStorage({
-    destination(req, file, cb){
-        cb(null, `load/${file.fieldname}`);
-    },
-    filename(req, file, cb){
-        cb(null, `${Date.now()}-${file.originalname}`);
-    }
+  destination(req, file, cb) {
+    cb(null, `load/${file.fieldname}`);
+  },
+  filename(req, file, cb) {
+    cb(null, `${Date.now()}-${file.originalname}`);
+  },
 });
 
 export const fileFilter = (req, file, cb) => {
-    if (file.fieldname === 'fileBook'){
-        if (file.originalname.match(/\.(pdf|txt|doc|docx)$/)){
-            cb(null, true);
-        } else {
-            cb(null, false);
-        }
+  if (file.fieldname === "fileBook") {
+    if (file.originalname.match(/\.(pdf|txt|doc|docx)$/)) {
+      cb(null, true);
     } else {
-        if (file.originalname.match(/\.(png|jpg|jpeg|gif)$/)){
-            cb(null, true);
-        } else {
-            cb(null, false);
-        }
+      cb(null, false);
     }
+  } else {
+    if (file.originalname.match(/\.(png|jpg|jpeg|gif)$/)) {
+      cb(null, true);
+    } else {
+      cb(null, false);
+    }
+  }
 };
-

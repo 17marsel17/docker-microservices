@@ -2,18 +2,9 @@ import express from "express";
 import { store, Book } from "../book.js";
 import { storage, fileFilter } from "../middleware/file.js";
 import multer from "multer";
-import { STORAGE_URL } from "../config.js";
-import redis from "redis";
+import { COUNTER_URL } from "../config.js";
 
 export const router = express.Router();
-
-const client = redis.createClient({ url: STORAGE_URL });
-
-(async () => {
-  await client.connect();
-})();
-
-const storeRedis = {};
 
 router.get("/:id/download", (req, res) => {
   const { books } = store;
@@ -43,8 +34,8 @@ router.get("/:id", async (req, res) => {
   }
 
   try {
-    const count = await client.incr(id);
-    res.json({ book: book, bookId: id, count: count });
+    const counterRes = router.post(`${COUNTER_URL}/${id}/incr`);
+    res.json({ book: book, bookId: id, count: counterRes.count });
   } catch (e) {
     console.log(e);
     res.statusCode(500).json({ errcode: 500, errmsg: "Ошибка redis" });
